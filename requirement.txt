@@ -1,0 +1,13 @@
+certifi==2020.12.5
+chardet==4.0.0
+colorama==0.4.4
+fastapi==0.63.0
+idna==2.10
+loguru==0.5.3
+prometheus-client==0.9.0
+pydantic==1.7.3
+requests==2.25.1
+starlette==0.13.6
+toml==0.10.2
+urllib3==1.26.2
+win32-setctime==1.0.3

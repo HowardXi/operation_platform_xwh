@@ -1,0 +1,8 @@
+/dev
+/Include
+/Lib
+/tcl
+/Scripts
+/__pycache__
+/.idea
+/test
