@@ -2,7 +2,9 @@
 /Include
 /Lib
 /tcl
+/env
 /Scripts
 /__pycache__
 /.idea
 /test
+/dev/libvirt

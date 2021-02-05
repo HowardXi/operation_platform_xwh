@@ -1,0 +1,22 @@
+memcache:
+  host: "172.18.0.21"
+  port: 11211
+
+redis:
+  host: "172.18.0.21"
+  port: 6379
+  password: "redis_passwd"
+
+
+operation_service_api:
+  listen_port: 11000
+  log_dir: "/var/operation_service_x"
+  prometheus_url: "http://172.18.0.21:9090"
+  node_exporter_port: 9100
+
+
+file_service:
+  listen_port: 11001
+  cache_dir: "/var/operation_cache"
+
+
