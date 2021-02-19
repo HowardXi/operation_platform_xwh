@@ -17,4 +17,6 @@ MAILTO=root
 
 1 * * * * date +%s > /root/python_precompile_4_pcl/custom_metrics/timestamp.prom
 
+* 1 * * * virt-df > /var/.virt-df
+
 

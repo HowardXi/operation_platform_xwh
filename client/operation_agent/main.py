@@ -3,7 +3,8 @@
 # @Time         : 2021/2/2 17:51
 # @Author       : xwh
 # @File         : main.py
-# @Description  :
+# @Description  : 数值数据发到prometheus pushgateway 方便作图 , 字符串数据放redis 不需要历史数据
+
 from fastapi import FastAPI
 import uvicorn
 

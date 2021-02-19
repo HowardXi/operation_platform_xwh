@@ -8,3 +8,4 @@
 /.idea
 /test
 /dev/libvirt
+**/__pycache__

@@ -5,10 +5,11 @@
 # @File         : service_op.py
 # @Description  :
 
-from fastapi import FastAPI
+from fastapi import APIRouter
 from .system_service_status import SystemdBus, Journal
 
-service = FastAPI()
+service = APIRouter()
+
 
 @service.get("/status/{name}")
 async def get_service_status(name):
@@ -18,6 +19,7 @@ async def get_service_status(name):
         "name": name,
         "ActiveState": state
     }
+
 
 @service.get("/{behavior}/{str:name}")
 async def service_operate(behavior, name):
@@ -30,3 +32,8 @@ async def service_operate(behavior, name):
         "stop": dbus.stop_unit,
     }
     return support[behavior](name)
+
+
+@service.get("/log/{service_name}/{lines}")
+def get_service_log(service_name, lines: int):
+    return Journal(service_name).get_tail(lines)

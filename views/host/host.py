@@ -10,6 +10,7 @@ from utils.prometheus_api import *
 from time import time
 from dateutil.parser import parse
 from settings_parser import cfg
+from json import dumps
 
 host_router = APIRouter()
 host_history_router = APIRouter()
@@ -25,14 +26,13 @@ def get_history(host, type_, start, end, step=60):
         return {
             "status": -1,
             "timestamp": round(time(), 1),
-            "msg": "Unknow type: %s" % type_,
+            "msg": f"Unknow type: {type_}, support type: {dumps(list(expr_map.keys()))}",
             "value": {}
         }
-    expr = expr_map[type_]
-    res = query_range(
-        expr.format(f=',instance="%s:%d"' % (
-            host, cfg["operation_service_api"]["node_exporter_port"])),
-        start=start, end=end, step=step)["result"]
+    base_expr = expr_map[type_]
+    expr = base_expr.format(f=',instance="%s:%d"' % (
+        host, cfg["operation_service_api"]["node_exporter_port"]))
+    res = query_range(expr,start=start, end=end, step=step)["result"]
     if res:
         return {
             "status": 0,
@@ -44,7 +44,7 @@ def get_history(host, type_, start, end, step=60):
         return {
             "status": -1,
             "timestamp": round(time(), 1),
-            "msg": "no such data",
+            "msg": f"no such data, expr: {expr}",
             "value": res
         }
 

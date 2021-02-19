@@ -1,0 +1,11 @@
+operation_agent:
+  data_target:
+    memcache: False
+    redis: False
+    pushgateway: True
+
+  host_ip: "172.16.0.13"
+  pushgateway_url: "http://172.18.0.21:9091/"
+  memcache_addr : "172.18.0.21:11211"
+  redis_addr : "172.18.0.21:6379"
+  find_netdev_re: "tapxxxxxxxx-xx"
