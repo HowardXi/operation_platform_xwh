@@ -14,8 +14,11 @@ from json import loads
 vm_router = APIRouter()
 
 
-@vm_router.get("/static_info/{vm_name}")
+@vm_router.get("/base_info/{vm_name}")
 async def vm_static_info(vm_name):
+    """
+    虚拟机名,uuid,工程等信息
+    """
     vm_data = mem.get(vm_name)
     if vm_data == None:
         return {

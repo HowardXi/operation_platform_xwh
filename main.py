@@ -6,11 +6,19 @@
 
 import uvicorn
 from settings_parser import cfg
+from time import time
+from exception import NoExistException
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, status
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import PlainTextResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import RequestValidationError
+from fastapi.exception_handlers import http_exception_handler
+
 from views.host.hosts import hosts_router
-from views.host.host import host_router, host_history_router
+from views.host.hosts_history import host_history_router
 from views.host.hardware import hardware_router
 from views.public_service.midware.kafka import kafka_router
 from views.functions.file_op import file_router
@@ -26,9 +34,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"])
 
+
 # physical layer
 app.include_router(hosts_router, prefix="/hosts")
-app.include_router(host_router, prefix="/host")
 app.include_router(hardware_router, prefix="/hardware")
 app.include_router(ipmi_router, prefix="/ipmi")
 

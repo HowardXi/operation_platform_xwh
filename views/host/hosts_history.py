@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time         : 2021/1/29 18:27
 # @Author       : xwh
-# @File         : host.py
+# @File         : hosts_history.py
 # @Description  :
 
 from fastapi import APIRouter
@@ -12,7 +12,6 @@ from dateutil.parser import parse
 from settings_parser import cfg
 from json import dumps
 
-host_router = APIRouter()
 host_history_router = APIRouter()
 
 expr_map = {
@@ -20,8 +19,11 @@ expr_map = {
 }
 
 
-@host_history_router.get("/{host}/{type}}/{start}/{end}/{step}")
-def get_history(host, type_, start, end, step=60):
+@host_history_router.get("/{host}")
+def get_history(host: str, type_: str, start: int, end: int, step: int = 60):
+    """
+    物理机的历史使用量信息
+    """
     if type_ not in expr_map:
         return {
             "status": -1,
@@ -32,7 +34,7 @@ def get_history(host, type_, start, end, step=60):
     base_expr = expr_map[type_]
     expr = base_expr.format(f=',instance="%s:%d"' % (
         host, cfg["operation_service_api"]["node_exporter_port"]))
-    res = query_range(expr,start=start, end=end, step=step)["result"]
+    res = query_range(expr, start=start, end=end, step=step)["result"]
     if res:
         return {
             "status": 0,
@@ -47,32 +49,6 @@ def get_history(host, type_, start, end, step=60):
             "msg": f"no such data, expr: {expr}",
             "value": res
         }
-
-
-@host_router.get("/{ip}")
-async def base_info(ip):
-    print(request_prometheus("", "targets"))
-    for host in request_prometheus("", "targets")["activeTargets"]:
-        if host["labels"]["instance"].split(":")[0] == ip:
-            return {
-                "status": 0,
-                "timestamp": round(parse(host["lastScrape"]).timestamp(), 1),
-                "msg": "",
-                "value": {
-                    "host": host["labels"]["instance"].split(":")[0],
-                    "health": host["health"],
-                    "type": host["labels"]["job"],
-                    "last_update_time": host["lastScrape"],
-                    "error": host["lastError"],
-                    "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]
-                }
-            }
-    return {
-        "status": -1,
-        "timestamp": round(time(), 1),
-        "msg": "Can not find host %s" % ip,
-        "value": {}
-    }
 
 
 if __name__ == '__main__':

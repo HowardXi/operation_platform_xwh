@@ -24,7 +24,8 @@ def request_prometheus(expr, type, method_func=get, **kwargs):
         param = {"query": expr, "start": kwargs["start"],
                  "end": kwargs["end"], "step": kwargs["step"]}
     else:
-        return
+        url += type
+        param = None
     try:
         r = method_func(url, timeout=3, params=param)
         log.info("query from prometheus, url=%s, respone=%d" % (url, r.status_code))
@@ -67,20 +68,21 @@ def classify_hosts(job):
 
 
 if __name__ == '__main__':
+    print(classify_hosts("kafka"))
     # r =get(prometheus_url + '/api/v1/targets/metadata?match_target={instance="172.16.0.13:9100"}')
     # print(dumps(loads(r.content), indent=4))
     # print_dump(query_range("""sum(increase(node_cpu_seconds_total{mode="idle"}[10m]))"""))
-    now = int(time())
-
+    # now = int(time())
+    #
     # print_dump(request_prometheus(
     #     'sum(increase(node_cpu_seconds_total{mode="idle"}',
     #     type="query_range",
     #     from_=now-300, until=now, step=60
     # ))
-    sql = '(1- sum(increase(node_cpu_seconds_total{mode="idle"}[2m])) by (instance)/sum(increase(node_cpu_seconds_total[2m])) by (instance)) * 100'
-    start = now - 600
-    end = now
-
-    print_dump(request_prometheus(sql, type="query_range", start=start, end=end, step=60))
+    # sql = '(1- sum(increase(node_cpu_seconds_total{mode="idle"}[2m])) by (instance)/sum(increase(node_cpu_seconds_total[2m])) by (instance)) * 100'
+    # start = now - 600
+    # end = now
+    #
+    # print_dump(request_prometheus(sql, type="query_range", start=start, end=end, step=60))
     # response = requests.get('http://localhost:9090/api/v1/query'),
     # params={'query': "query=container_cpu_load_average_10s{container_name=POD}"})
