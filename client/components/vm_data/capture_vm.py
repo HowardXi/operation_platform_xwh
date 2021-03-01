@@ -21,7 +21,8 @@ if sts != 0:
 else:
     version = tuple([int(i) for i in txt.strip().replace("\n", "").split(".")])
     if version == (4, 5, 0):
-        from .libvirt_4_5 import libvirt as libvirt
+        from client.components.vm_data.libvirt_4_5 import libvirt as libvirt
+        # libvirt = __import__("")
     else:
         log.error("libvirt version error")
         exit(-1)
@@ -51,13 +52,13 @@ domains = conn.listAllDevices()
 infos = []
 
 find_netdev = compile(
-    cfg["operation_agent"]["find_netdev_re"].replace("x", "[0-9a-zA-Z]"))
+    cfg["dev"]["find_netdev_re"].replace("x", "[0-9a-zA-Z]"))
 
 
 # yum -y install libguestfs-tools libguestfs-xfs virt-top
 # virt-df --csv
-
-class VMMetrics():
+# Metrics
+class VM():
     def __init__(self, domain):
         self.domain = domain
         self.name = self.domain.name()
@@ -73,7 +74,7 @@ class VMMetrics():
     @property
     async def cpu(self):
         start = domain.getCPUStats(True)
-        await sleep(0.5)
+        await sleep(1)
         end = domain.getCPUStats(True)
 
         return (
@@ -134,7 +135,7 @@ class VMMetrics():
     @property
     def network(self):
         d = []
-        devs = find_netdev(self.domain.XMLDesc())
+        devs = find_netdev.findall(self.domain.XMLDesc())
         for dev in devs:
             tx_bytes, tx_packets, tx_errors, tx_drop, \
             rx_bytes, rx_packets, rx_errors, rx_drop = self.domain.interfaceStats(dev)

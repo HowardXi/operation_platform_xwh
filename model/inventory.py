@@ -14,7 +14,7 @@ from utils.database import Base
 class Host(Base):
     __tablename__ = "hosts"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     ip = Column(String, unique=True, index=True)
     node_type = Column(String)
     state = Column(Integer, default=0)

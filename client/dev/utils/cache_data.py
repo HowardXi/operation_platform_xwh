@@ -26,9 +26,9 @@ push_data("xxxxxx", "cpu_usage", "", 90.212)
 
 #
 mem = PooledClient((cfg["memcache"]["host"], cfg["memcache"]["port"]), max_pool_size=cpu_count() * 2) \
-    if cfg["operation_agent"]["data_target"]["memcache"] else None
+    if cfg["dev"]["data_target"]["memcache"] else None
 
-if cfg["operation_agent"]["data_target"]["redis"]:
+if cfg["dev"]["data_target"]["redis"]:
     redis_pool = ConnectionPool(host=cfg["redis"]["host"], port=cfg["redis"]["port"],
                                 password=cfg["redis"]["password"], decode_responses=True)
     redis = Redis(connection_pool=redis_pool)
