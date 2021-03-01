@@ -16,6 +16,8 @@ class Host(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     ip = Column(String, unique=True, index=True)
+    job = Column(String) #
+    part = Column(String) # physical，
     node_type = Column(String)
     state = Column(Integer, default=0)
 

@@ -21,7 +21,7 @@ if sts != 0:
 else:
     version = tuple([int(i) for i in txt.strip().replace("\n", "").split(".")])
     if version == (4, 5, 0):
-        from client.components.vm_data.libvirt_4_5 import libvirt as libvirt
+        from client.components.capture_vm.libvirt_4_5 import libvirt as libvirt
         # libvirt = __import__("")
     else:
         log.error("libvirt version error")
