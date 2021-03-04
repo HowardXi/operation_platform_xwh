@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from settings_parser import cfg
-
+from contextlib import contextmanager
 
 engine = create_engine(
     f'mysql+pymysql://{cfg["db"]["username"]}:{cfg["db"]["password"]}@'
@@ -17,6 +17,19 @@ engine = create_engine(
 SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
+
+Base.metadata.create_all(engine)
+
+@contextmanager
+def session_maker(session=SessionLocal()):
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 if __name__ == '__main__':
     print(engine)

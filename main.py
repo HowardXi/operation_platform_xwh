@@ -8,6 +8,7 @@ import uvicorn
 from settings_parser import cfg
 from time import time
 from exception import NoExistException
+from utils.database import Base, engine
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
@@ -54,6 +55,7 @@ app.include_router(kafka_router, prefix="/midware/kafka")
 app.include_router(file_router, prefix="/function")
 
 if __name__ == '__main__':
+    Base.metadata.create_all(engine)
     uvicorn.run(
         app='main:app', host="0.0.0.0", port=cfg["operation_service_api"]["listen_port"],
         reload=True, debug=True, )
