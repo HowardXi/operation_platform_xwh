@@ -19,7 +19,7 @@ def add_host(
         ip: str = Body(..., regex="^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$"),
         node_type: str = Body(..., min_length=1),
         exporter_port: int = Body(..., gt=0),
-        interval: int = Body(...),
+        interval: str = Body(...),
         physical: bool = Body(True),
         costom_label: str = Body(...),
         desc: str = Body(...),
@@ -66,7 +66,4 @@ def reload_prometheus():
     """
     prometheus_reload()
     return ""
-
-
-
 

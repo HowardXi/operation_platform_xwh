@@ -55,5 +55,5 @@ app.include_router(file_router, prefix="/function")
 
 if __name__ == '__main__':
     uvicorn.run(
-        app='main:app', host="127.0.0.1", port=cfg["operation_service_api"]["listen_port"],
+        app='main:app', host="0.0.0.0", port=cfg["operation_service_api"]["listen_port"],
         reload=True, debug=True, )

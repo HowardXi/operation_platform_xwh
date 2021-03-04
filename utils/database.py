@@ -8,12 +8,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+from settings_parser import cfg
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
 
 engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    f'mysql+pymysql://{cfg["db"]["username"]}:{cfg["db"]["password"]}@'
+    f'{cfg["db"]["host"]}/operation_platform')
+SessionLocal = sessionmaker(bind=engine)
 
 Base = declarative_base()
+
+if __name__ == '__main__':
+    print(engine)
+    print(SessionLocal)

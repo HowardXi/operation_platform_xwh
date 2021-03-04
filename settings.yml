@@ -7,9 +7,14 @@ redis:
   port: 6379
   password: "redis_passwd"
 
+db:
+  type: "mysql"
+  host: "172.18.0.21"
+  username: "root"
+  password: "123456"
 
 operation_service_api:
-  listen_port: 11000
+  listen_port: 11011
   log_dir: "/var/operation_service_x"
   prometheus_url: "http://172.18.0.21:9090"
   node_exporter_port: 9100
