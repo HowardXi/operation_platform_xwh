@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from model.inventory import Host
 from fastapi import APIRouter, Body, HTTPException
 from utils.database import SessionLocal
-from utils.prometheus_checker import prometheus_reload
+from utils.prometheus_cfg_reload import prometheus_reload
 from crud.host import *
 
 host = APIRouter()

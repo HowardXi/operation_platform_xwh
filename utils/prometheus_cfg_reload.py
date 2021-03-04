@@ -11,7 +11,6 @@ from loguru import logger as log
 from requests import post
 import json
 from settings_parser import PHYSICAL_HOST_JOB, cfg
-from utils.database import SessionLocal
 from crud.host import query_all_phy_host
 
 
@@ -21,7 +20,7 @@ def prometheus_reload():
     with open(prometheus_config_path, "r") as f:
         pc = yaml.load(f, yaml.FullLoader)
 
-    all_phy_host = query_all_phy_host(session=SessionLocal)
+    all_phy_host = query_all_phy_host()
     new_scrape_configs = []
     for job in pc["scrape_configs"]:
         if job["job_name"] not in PHYSICAL_HOST_JOB:
