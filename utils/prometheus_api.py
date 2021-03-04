@@ -15,7 +15,7 @@ from settings_parser import cfg
 
 # @log.catch
 def request_prometheus(expr, type, method_func=get, **kwargs):
-    url = cfg["operation_service_api"]["prometheus_url"] + "/api/v1/"
+    url = cfg["prometheus"]["prometheus_url"] + "/api/v1/"
     if type == "query":
         url += "query?query=" + expr
         param = None

@@ -13,11 +13,14 @@ db:
   username: "root"
   password: "123456"
 
+prometheus:
+  prometheus_url: "http://172.18.0.21:9090"
+  prometheus_cfg_path: "/root/xwh/prometheus/prometheus.yml"
+
 operation_service_api:
   listen_port: 11011
   log_dir: "/var/operation_service_x"
-  prometheus_url: "http://172.18.0.21:9090"
-  node_exporter_port: 9100
+
 
 
 file_service:

@@ -27,7 +27,11 @@ from views.function.file_op import file_router
 from views.virtual_layer.vm import vm_router
 from views.host.ipmi import ipmi_router
 
-app = FastAPI()
+app = FastAPI(
+    title="operation service api",
+    description="",
+    version="0.1.0"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"])
 
 
-# server op
+# device crud
 app.include_router(inventory_host_router, prefix="/inventory/host")
 
 # physical layer

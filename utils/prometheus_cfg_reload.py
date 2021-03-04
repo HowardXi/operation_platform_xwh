@@ -7,7 +7,6 @@
 
 import yaml
 from loguru import logger as log
-# from settings_parser import prometheus_config_path
 from requests import post
 import json
 from settings_parser import PHYSICAL_HOST_JOB, cfg
@@ -15,7 +14,7 @@ from crud.host import query_all_phy_host
 
 
 def prometheus_reload():
-    prometheus_config_path = "../dev/prometheus.yml"
+    # prometheus_config_path = "../dev/prometheus.yml"
 
     with open(prometheus_config_path, "r") as f:
         pc = yaml.load(f, yaml.FullLoader)
