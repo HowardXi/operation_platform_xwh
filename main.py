@@ -18,6 +18,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.exception_handlers import http_exception_handler
 
 from views.host.hosts import hosts_router
+from views.inventory.hosts import host as inventory_host_router
 from views.host.hosts_history import host_history_router
 from views.host.hardware import hardware_router
 from views.public_service.midware.kafka import kafka_router
@@ -34,6 +35,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"])
 
+
+# server op
+app.include_router(inventory_host_router, prefix="/inventory/host")
 
 # physical layer
 app.include_router(hosts_router, prefix="/hosts")
@@ -52,4 +56,4 @@ app.include_router(file_router, prefix="/function")
 if __name__ == '__main__':
     uvicorn.run(
         app='main:app', host="127.0.0.1", port=cfg["operation_service_api"]["listen_port"],
-        reload=False, debug=False, )
+        reload=True, debug=True, )

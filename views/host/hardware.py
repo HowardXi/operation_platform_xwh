@@ -25,7 +25,7 @@ async def host_hardware_info(ip=None):
             "value": data
         }
     else:
-        raise NoExistException("不知道你请求这玩意在哪, 查查url和缓存吧")
+        raise NoExistException("不知道请求的这玩意在哪, 查查url和缓存吧")
 
 
 if __name__ == '__main__':

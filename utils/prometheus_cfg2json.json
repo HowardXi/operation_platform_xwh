@@ -1,0 +1,75 @@
+{
+  "global": {
+    "scrape_interval": "60s",
+    "evaluation_interval": "60s"
+  },
+  "alerting": {
+    "alertmanagers": [{
+      "static_configs": [{
+        "targets": null
+      }]
+    }]
+  },
+  "rule_files": null,
+  "remote_write": [{
+    "url": "http://localhost:8086/api/v1/prom/write?db=prometheus"
+  }],
+  "remote_read": [{
+    "url": "http://localhost:8086/api/v1/prom/read?db=prometheus"
+  }],
+  "scrape_configs": [{
+    "job_name": "push-metrics",
+    "static_configs": [{
+      "targets": [
+        "localhost:9091"
+      ],
+      "labels": {
+        "clabel": "costom_label"
+      }
+    }],
+    "honor_labels": true
+  },
+    {
+      "job_name": "prometheus",
+      "static_configs": [{
+        "targets": [
+          "172.18.0.21:9090"
+        ]
+      }]
+    },
+    {
+      "job_name": "kafka",
+      "scrape_interval": "60s",
+      "static_configs": [{
+        "targets": [
+          "172.18.0.21:9308"
+        ]
+      }]
+    },
+    {
+      "job_name": "operation node",
+      "scrape_interval": "60s",
+      "static_configs": [{
+        "targets": [
+          "172.18.0.21:9100"
+        ],
+        "labels": {
+          "clabel": "costom_label"
+        }
+      }]
+    },
+    {
+      "job_name": "compute node",
+      "scrape_interval": "60s",
+      "static_configs": [{
+        "targets": [
+          "172.16.0.13:9100",
+          "172.16.0.15:9100"
+        ],
+        "labels": {
+          "clabel": "costom_label"
+        }
+      }]
+    }
+  ]
+}

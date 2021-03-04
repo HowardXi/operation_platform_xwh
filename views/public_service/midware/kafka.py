@@ -6,8 +6,9 @@
 # @Description  :
 
 from utils.prometheus_api import classify_hosts, query
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from loguru import logger
+from exception import NoExistException
 from time import time
 
 log = logger
@@ -21,12 +22,24 @@ async def hello():
 
 
 @kafka_router.get("/hosts")
-async def kafka_hosts():
-    return [{
-        "host": i["labels"]["instance"].split(":")[0],
-        "health": i["health"],
-        "last_update_time": i["lastScrape"],
-    } for i in classify_hosts("kafka")]
+async def kafka_hosts(ip:str = Query(None)):
+    res= []
+    for host in classify_hosts("kafka"):
+        host_ip = host["labels"]["instance"].split(":")[0]
+        if ip:
+            if ip == host_ip:
+                res.append({
+                    "host": host_ip,
+                    "health": host["health"],
+                    "last_update_time": host["lastScrape"],
+                })
+        else:
+            res.append({
+                "host": host_ip,
+                "health": host["health"],
+                "last_update_time": host["lastScrape"],
+            })
+    return res
 
 
 @kafka_router.get("/consumergroup_lag")
@@ -64,12 +77,8 @@ async def kafka_info(ip):
             "value": res
         }
     else:
-        return {
-            "status": -1,
-            "timestamp": round(time(), 1),
-            "msg": "Can not find kafka broker %s" % ip,
-            "value": res
-        }
+        raise NoExistException("找不着这个Kafka的broker, 先看看有没有添加这个主机/服务")
+
 
 
 if __name__ == '__main__':

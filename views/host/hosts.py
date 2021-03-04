@@ -8,41 +8,61 @@
 from fastapi import APIRouter
 from fastapi import Query
 from time import time
-
+from settings_parser import PHYSICAL_HOST_JOB
 from utils.prometheus_api import request_prometheus
 
 hosts_router = APIRouter()
-HOST_JOB = {
-    "compute node", "network node", "controller node", "application node"
-}
 
 
 @hosts_router.get("/")
-async def host_base(ip: str =Query(None, max_length=16)):
+async def host_base(ip: str = Query(None, max_length=16), job: str = Query(None)):
     """
-    物理机基础信息
+    物理机状态信息和基础信息
     """
     all_host = []
     print(ip)
     for host in request_prometheus("", "targets")["activeTargets"]:
-        if host["labels"]["job"] in HOST_JOB:
+        if host["labels"]["job"] in PHYSICAL_HOST_JOB:
             host_ip = host["labels"]["instance"].split(":")[0]
             print(host_ip)
-            if ip:
+            if ip and not job:
                 if ip == host_ip:
                     all_host.append({
                         "host": host_ip,
                         "health": host["health"],
-                        "type": host["labels"]["job"]})
+                        "job": host["labels"]["job"],
+                        "last_update_time": host["lastScrape"],
+                        "error": host["lastError"],
+                        "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
 
-                    # "last_update_time": host["lastScrape"],
-                    # "error": host["lastError"],
-                    # "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]
+            if job and not ip:
+                if job == host["labels"]["job"]:
+                    all_host.append({
+                        "host": host_ip,
+                        "health": host["health"],
+                        "job": host["labels"]["job"],
+                        "last_update_time": host["lastScrape"],
+                        "error": host["lastError"],
+                        "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
+
+            if job and ip:
+                if job == host["labels"]["job"] and ip == host_ip:
+                    all_host.append({
+                        "host": host_ip,
+                        "health": host["health"],
+                        "job": host["labels"]["job"],
+                        "last_update_time": host["lastScrape"],
+                        "error": host["lastError"],
+                        "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
+
             else:
                 all_host.append({
                     "host": host_ip,
                     "health": host["health"],
-                    "type": host["labels"]["job"]})
+                    "job": host["labels"]["job"],
+                    "last_update_time": host["lastScrape"],
+                    "error": host["lastError"],
+                    "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
 
     return {
         "status": 0,

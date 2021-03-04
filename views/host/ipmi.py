@@ -5,16 +5,17 @@
 # @File         : ipmi.py
 # @Description  :
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
+from exception import NoExistException
 from settings_parser import mem
 from json import loads
 from time import time
 
 ipmi_router = APIRouter()
 
-@ipmi_router.get("/sensor/{host}")
-async def get_sensor_data(host):
-    data = loads(mem.get("%s_ipmi_sensor" % host) or "{}")
+@ipmi_router.get("/sensor/")
+async def get_sensor_data(ip:str = Query(...)):
+    data = loads(mem.get("%s_ipmi_sensor" % ip) or "{}")
     if data:
         return {
             "status": 0,
@@ -23,12 +24,7 @@ async def get_sensor_data(host):
             "value": data
         }
     else:
-        return {
-            "status": -1,
-            "timestamp": round(time(), 1),
-            "msg": "Can not find IPMI sensor data about host %s" % host,
-            "value": data
-        }
+        raise NoExistException("Can not find IPMI sensor data about host %s" % ip)
 
 
 if __name__ == '__main__':

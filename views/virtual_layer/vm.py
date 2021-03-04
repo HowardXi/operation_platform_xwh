@@ -5,8 +5,9 @@
 # @File         : vm.py
 # @Description  :
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from settings_parser import mem
+from exception import *
 from time import time
 from datetime import datetime
 from json import loads
@@ -14,19 +15,14 @@ from json import loads
 vm_router = APIRouter()
 
 
-@vm_router.get("/base_info/{vm_name}")
-async def vm_static_info(vm_name):
+@vm_router.get("/static_info")
+async def vm_static_info(vm_name:str = Query(...)):
     """
-    虚拟机名,uuid,工程等信息
+    虚拟机名,uuid,工程,配额等信息
     """
     vm_data = mem.get(vm_name)
     if vm_data == None:
-        return {
-            "status": -1,
-            "value": None,
-            "timestamp": time(),
-            "msg": "Can not find %s" % vm_name
-        }
+        raise NoExistException("对应虚拟机信息不存在,检查缓存和采集程序")
     else:
         vm_data = loads(vm_data)
         return {

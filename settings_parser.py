@@ -35,4 +35,9 @@ redis_pool = ConnectionPool(host=cfg["redis"]["host"], port=cfg["redis"]["port"]
                             password=cfg["redis"]["password"],decode_responses=True)
 redis = Redis(connection_pool=redis_pool)
 
+PHYSICAL_HOST_JOB = {
+    "compute node", "network node", "controller node", "application node", "operation node"
+}
+
+
 # print(mem.get("172.16.0.13_ipmi_sensor"))
