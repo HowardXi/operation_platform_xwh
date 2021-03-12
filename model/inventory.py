@@ -15,7 +15,7 @@ class Host(Base):
     __tablename__ = "hosts"
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    ip = Column(String(16), unique=True, index=True)
+    ip = Column(String(16), index=True)
     # job = Column(String) # "compute node", "network node", "controller node", "application node", "operation node"
     exporter_port = Column(Integer, default=9100)
     interval = Column(String(6), default="60s")

@@ -14,7 +14,7 @@ from contextlib import contextmanager
 engine = create_engine(
     f'mysql+pymysql://{cfg["db"]["username"]}:{cfg["db"]["password"]}@'
     f'{cfg["db"]["host"]}/operation_platform')
-SessionLocal = sessionmaker(bind=engine)
+SessionLocal = sessionmaker(bind=engine,expire_on_commit=False)
 
 Base = declarative_base()
 

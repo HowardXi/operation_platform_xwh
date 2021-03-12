@@ -39,15 +39,19 @@ def query_host(ip):
     with session_maker() as session:
         return session.query(Host).filter(Host.ip == ip).first()
 
-def query_all_phy_host():
+def query_all_host(_phy=True):
     with session_maker() as session:
         res = []
         for host in session.query(Host):
-            if host.node_type in PHYSICAL_HOST_JOB:
+            if _phy == True:
+                if host.node_type in PHYSICAL_HOST_JOB:
+                    res.append(host)
+            else:
                 res.append(host)
 
     return res
 
 if __name__ == '__main__':
     from utils.database import *
-    print(query_host("172.16.0.13"))
+    # print(query_host("172.16.0.13"))
+    print(query_all_phy_host()[0].ip)

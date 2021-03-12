@@ -20,7 +20,7 @@ prometheus:
 operation_service_api:
   listen_port: 11011
   log_dir: "/var/operation_service_x"
-
+  prometheus_url: "http://172.18.0.21:9090"
 
 
 file_service:
