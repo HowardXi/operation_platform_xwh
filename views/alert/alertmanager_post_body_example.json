@@ -1,0 +1,50 @@
+{
+  "receiver": "web\\.hook",
+  "status": "firing",
+  "alerts": [
+    {
+      "status": "resolved",
+      "labels": {
+        "alertname": "cpu使用率过高",
+        "instance": "172.16.0.13:9100",
+        "severity": "warning"
+      },
+      "annotations": {
+        "description": "172.16.0.13:9100 of job cpu使用率超过80%,当前使用率[20.08437500011901].",
+        "summary": "Instance 172.16.0.13:9100 cpu使用率过高"
+      },
+      "startsAt": "2021-03-12T08:25:32.536070237Z",
+      "endsAt": "2021-03-12T08:29:32.536070237Z",
+      "generatorURL": "http://app-s2-1.local:9090/graph?g0.expr=100+-+avg+by%28instance%29+%28irate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D%29%29+%2A+100+%3E+20\u0026g0.tab=1",
+      "fingerprint": "a5deb4528006c4bc"
+    },
+    {
+      "status": "firing",
+      "labels": {
+        "alertname": "cpu使用率过高",
+        "instance": "172.18.0.21:9100",
+        "severity": "warning"
+      },
+      "annotations": {
+        "description": "172.18.0.21:9100 of job cpu使用率超过80%,当前使用率[29.3192708340939].",
+        "summary": "Instance 172.18.0.21:9100 cpu使用率过高"
+      },
+      "startsAt": "2021-03-12T08:25:32.536070237Z",
+      "endsAt": "0001-01-01T00:00:00Z",
+      "generatorURL": "http://app-s2-1.local:9090/graph?g0.expr=100+-+avg+by%28instance%29+%28irate%28node_cpu_seconds_total%7Bmode%3D%22idle%22%7D%5B5m%5D%29%29+%2A+100+%3E+20\u0026g0.tab=1",
+      "fingerprint": "fa58c20739a31829"
+    }
+  ],
+  "groupLabels": {
+    "alertname": "cpu使用率过高"
+  },
+  "commonLabels": {
+    "alertname": "cpu使用率过高",
+    "severity": "warning"
+  },
+  "commonAnnotations": {},
+  "externalURL": "http://app-s2-1.local:9093",
+  "version": "4",
+  "groupKey": "{}:{alertname=\"cpu使用率过高\"}",
+  "truncatedAlerts": 0
+}

@@ -31,8 +31,8 @@ def add_host(
     """
     在资产中添加一个主机  \n
     :param ip: 主机ip \n
-    :param node_type: 主机类型, 只能是compute node,network node,controller node,application node,operation node之一,
-    如果特殊类型统一为app node \n
+    :param node_type: 主机类型或服务名, 如果是[compute node, network node, controller node, application node, operation node]之一,
+    则会被认定为是物理服务器, 否则当作服务/虚拟机处理 \n
     :param exporter_port: 主机的采集端口 默认prometheus的node-exporter为9100  \n
     :param interval: 采集间隔 默认60s 支持格式类似"60s", "1h", "5m"  \n
     :param physical: 主机为物理机时为true  \n

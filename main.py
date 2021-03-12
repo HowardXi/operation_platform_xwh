@@ -29,7 +29,7 @@ from views.host.ipmi import ipmi_router
 
 app = FastAPI(
     title="operation service api",
-    description="",
+    description="new operation platform",
     version="0.1.0"
 )
 
