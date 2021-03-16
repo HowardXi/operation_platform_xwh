@@ -7,5 +7,5 @@
 /__pycache__
 /.idea
 /test
-/dev/libvirt
+/client/dev/libvirt
 **/__pycache__

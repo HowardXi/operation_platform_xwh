@@ -31,7 +31,7 @@ def update_host(ip, state):
     with session_maker() as session:
         host = session.query(Host).filter(Host.ip == ip).first()
         host.state = state
-
+        session.commit()
     return host
 
 
@@ -54,4 +54,16 @@ def query_all_host(_phy=True):
 if __name__ == '__main__':
     from utils.database import *
     # print(query_host("172.16.0.13"))
-    print(query_all_phy_host()[0].ip)
+    create_host(
+        "172.16.0.16",
+        "compute node",
+        9100,
+        "1m",
+        True,
+        None,
+        "test desc",
+        "pwd",
+        "testpwd",
+        22,
+        "test"
+    )

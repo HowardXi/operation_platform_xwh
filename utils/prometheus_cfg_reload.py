@@ -17,7 +17,7 @@ from crud.host import query_all_host
 def prometheus_generate_config():
     prometheus_config_path = "../dev/prometheus.yml"
 
-    with open(prometheus_config_path, "r") as f:
+    with open(prometheus_config_path, "rb") as f:
         pc = yaml.load(f, yaml.FullLoader)
 
     all_host = query_all_host(False)

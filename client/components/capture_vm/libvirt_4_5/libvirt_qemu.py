@@ -23,7 +23,7 @@ except ImportError:
         if str(cyg_e).count("No module named"):
             raise lib_e
 
-from dev import libvirt
+from client.dev import libvirt
 
 
 # WARNING WARNING WARNING WARNING

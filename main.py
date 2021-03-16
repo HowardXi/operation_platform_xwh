@@ -21,6 +21,7 @@ from fastapi.exception_handlers import http_exception_handler
 from views.host.hosts import hosts_router
 from views.inventory.hosts import host as inventory_host_router
 from views.host.hosts_history import host_history_router
+from views.alert.alert import alert_router
 from views.host.hardware import hardware_router
 from views.public_service.midware.kafka import kafka_router
 from views.function.file_op import file_router
@@ -57,6 +58,8 @@ app.include_router(host_history_router, prefix="/history")
 
 app.include_router(kafka_router, prefix="/midware/kafka")
 app.include_router(file_router, prefix="/function")
+
+app.include_router(alert_router, prefix="/alert")
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)

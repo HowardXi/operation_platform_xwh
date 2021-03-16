@@ -1,0 +1,20 @@
+groups:
+  - name: node_usage
+    rules:
+      - alert: 内存使用率过高
+        expr: 100-(node_memory_Buffers_bytes+node_memory_Cached_bytes+node_memory_MemFree_bytes)/node_memory_MemTotal_bytes*100 > 60
+        for: 1m  # 告警持续时间，超过这个时间才会发送给alertmanager
+        labels:
+          severity: warning
+        annotations:
+          summary: "Instance {{ $labels.instance }} 内存使用率过高"
+          description: '{{ $labels.instance }} of job {{$labels.job}} 内存使用率超过60%,当前使用率 {{ $value | printf "%.2f" }} %.'
+
+      - alert: cpu使用率过高
+        expr: 100-avg(irate(node_cpu_seconds_total{mode="idle"}[5m])) by(instance)*100 > 20
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Instance {{ $labels.instance }} cpu使用率过高"
+          description: "{{ $labels.instance }} of job {{$labels.job}}cpu使用率超过20%,当前使用率 {{ $value }} %."

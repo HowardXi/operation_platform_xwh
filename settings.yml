@@ -9,6 +9,7 @@ redis:
 
 db:
   type: "mysql"
+  db_name: "operation_platform"
   host: "172.18.0.21"
   username: "root"
   password: "123456"
