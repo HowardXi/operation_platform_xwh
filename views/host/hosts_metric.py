@@ -16,43 +16,81 @@ from json import dumps
 
 host_metric_router = APIRouter()
 
+# 补全 原表达式中{换成{{, }换成}} 以应对str.format的KeyError问题
+# 在表达式中用{f}添加条件
 expr_map = {
-    "newest": {
-        "load1": 'sum(node_load1) by (instance) / count(node_cpu_seconds_total{mode="system"}) by (instance)',
-        "load15": 'sum(node_load15) by (instance) / count(node_cpu_seconds_total{mode="system"}) by (instance)',
+    "single_node": {
+        "load1": 'sum(node_load1) by (instance) / count(node_cpu_seconds_total{{mode="system"{f}}}) by (instance)',
+        "load15": 'sum(node_load15) by (instance) / count(node_cpu_seconds_total{{mode="system"{f}}}) by (instance)',
         "cpu": '100 * (1 - sum by (instance)(increase(node_cpu_seconds_total{{ mode="idle"{f} }}[5m])) / sum by (instance)(increase(node_cpu_seconds_total[5m])))',
-        "mem": '(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes',
-        "disk": '(sum(node_filesystem_size_bytes{device!="rootfs"{f}}) by (device) - sum(node_filesystem_free_bytes{device!="rootfs"{f}}) by ('
-                'device)) / sum(node_filesystem_size_bytes{device!="rootfs"{f}}) by (device)',
+        "mem": '(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes{f}',
+        "fs": '(sum(node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device) - sum('
+              'node_filesystem_free_bytes{{device!="rootfs"{f}}}) by (device)) / sum('
+              'node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device)',
         "read_bytes": 'sum(rate(node_disk_read_bytes_total{f}[5m]))by (instance)'
 
     },
-    "history": {
-        "cpu": '100 * (1 - sum by (instance)(increase(node_cpu_seconds_total{mode="idle"}[5m])) / sum by ('
-               'instance)(increase(node_cpu_seconds_total[5m])))',
-    },
-    "clus": {}
-    # (sum(node_filesystem_size_bytes{device!="rootfs"}) by (device) - sum(node_filesystem_free_bytes{device!="rootfs"}) by (device)) /sum(node_filesystem_size_bytes{device!="rootfs"}) by (device)
+    "cluster": {
+        "load1": 'sum(node_load1) by (instance) / count(node_cpu_seconds_total{{mode="system"{f}}}) by (instance)',
+        "load15": 'sum(node_load15) by (instance) / count(node_cpu_seconds_total{{mode="system"{f}}}) by (instance)',
+        "cpu": '100 * (1 - sum by (instance)(increase(node_cpu_seconds_total{{ mode="idle"{f} }}[5m])) / sum by (instance)(increase(node_cpu_seconds_total[5m])))',
+        "mem": '(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes{f}',
+        "fs": '(sum(node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device) - sum('
+              'node_filesystem_free_bytes{{device!="rootfs"{f}}}) by (device)) / sum('
+              'node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device)',
+        "read_bytes": 'sum(rate(node_disk_read_bytes_total{f}[5m]))by (instance)'
+
+
+    }
 }
 
 
-@host_metric_router.get("/history")
-def get_history(host: str, class_: str, start: int, end: int, step: int = 60):
+@host_metric_router.get("/metric_support_class_")
+def show_support_class_():
     """
-    物理机的历史使用量信息
+    这个接口只是为了展示现在支持的class_, 并没有实际作用, 注意分类和接口匹配, 单点对单点接口 集群对集群接口
     """
-    if class_ not in expr_map:
-        return {
-            "status": -1,
-            "timestamp": round(time(), 1),
-            "msg": f"Unknow type: {class_}, support type: {dumps(list(expr_map.keys()))}",
-            "value": {}
-        }
-    base_expr = expr_map["history"][class_]
-    f = ',instance="%s:%d"' % (host, cfg["operation_service_api"]["node_exporter_port"]) if \
-        "{" in base_expr else 'instance="%s:%d"' % (host, cfg["operation_service_api"]["node_exporter_port"])
+    return {k: list(v.keys()) for k, v in expr_map.items()}
+
+
+@host_metric_router.get("/history/cluster/{key}/{value}")
+def get_cluster_history(key, value):
+    pass
+
+
+@host_metric_router.get("/latest/cluster/{ip}")
+def get_cluster_latest(ip, class_: str = Query(...)):
+    pass
+
+
+@host_metric_router.get("/history/single/{ip}")
+def get_single_node_history(ip, class_: str = Query(...), start: int = Query(...),
+                            end: int = Query(...), step: int = Query(60, gt=10)):
+    """
+    物理机的历史使用量信息\n
+    start为开始时间 -600表示600秒前\n
+    end为结束时间 0 表示现在 -300表示300秒前
+    """
+    start += int(time())
+    end += int(time())
+
+    if start > end:
+        raise BadParamsException("请求的时间参数貌似不太对劲")
+
+    if class_ not in expr_map["single_node"]:
+        raise NoExistException("不存在这个分类, 支持分类:%s" % str(
+            list(expr_map["single_node"].keys())))
+
+    host = query_host(ip)
+    if not ip:
+        raise NoExistException("没有这个主机%s, 我没查到啊你先看看所有主机里边有没有..., 或者这个主机状态是正常的么" % ip)
+
+    base_expr = expr_map["single_node"][class_]
+    f = ',instance="%s:%d"' % (ip, host.exporter_port) if \
+        "{{" in base_expr else '{instance="%s:%d"}' % (ip, host.exporter_port)
     expr = base_expr.format(f=f)
     log.info("format expr: %s" % expr)
+
     res = query_range(expr, start=start, end=end, step=step)["result"]
     if res:
         return res
@@ -60,21 +98,22 @@ def get_history(host: str, class_: str, start: int, end: int, step: int = 60):
         raise NoExistException("没有这样式儿的数据, 我没查到啊")
 
 
-@host_metric_router.get("/latest")
-def get_lastest_data(ip: str = Query(...), class_: str = Query(...)):
+@host_metric_router.get("/latest/single/{ip}")
+def get_single_node_lastest_data(ip, class_: str = Query(...)):
     """
     物理机最新使用量信息
     """
     host = query_host(ip)
     if not ip:
-        raise NoExistException("没有这个主机%s, 我没查到啊" % ip)
+        raise NoExistException("没有这个主机%s, 我没查到啊你先看看所有主机里边有没有..." % ip)
 
-    base_expr = expr_map["newest"][class_]
+    if class_ not in expr_map["single_node"]:
+        raise NoExistException("不存在这个分类, 支持分类:%s" % str(
+            list(expr_map["single_node"].keys())))
+
+    base_expr = expr_map["single_node"][class_]
     f = ',instance="%s:%d"' % (ip, host.exporter_port) if \
-        "{" in base_expr else '{instance="%s:%d"}' % (ip, host.exporter_port)
-    log.info(f)
-    log.info("<filter>" in base_expr)
-    # expr = base_expr.replace("<filter>", f)
+        "{{" in base_expr else '{instance="%s:%d"}' % (ip, host.exporter_port)
     expr = base_expr.format(f=f)
     # expr = '100 * (1 - sum by (instance)(increase(node_cpu_seconds_total' \
     #        '{mode="idle",instance="172.16.0.13:9100"}[5m])) / sum by ' \
@@ -83,7 +122,7 @@ def get_lastest_data(ip: str = Query(...), class_: str = Query(...)):
     res = query(expr)
 
     if res:
-        return res
+        return res["result"]
     else:
         raise NoExistException("没有这样式儿的数据, 我没查到啊")
 
@@ -91,6 +130,4 @@ def get_lastest_data(ip: str = Query(...), class_: str = Query(...)):
 if __name__ == '__main__':
     from asyncio import run
 
-    print_dump(query_range(
-        expr='(1- sum(increase(node_cpu_sec2onds_total{mode="idle"}[2m])) by (instance)/sum(increase(node_cpu_seconds_total[2m])) by (instance)) * 100',
-        start=time() - 600, end=time(), step=60))
+    pass

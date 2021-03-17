@@ -68,6 +68,9 @@ def welcome():
 
 if __name__ == '__main__':
     Base.metadata.create_all(engine)
+    from os import system
+    # 服务器时间同步需要注意
+    system("ntpdate time.nist.gov")
     uvicorn.run(
         app='main:app', host="0.0.0.0", port=cfg["operation_service_api"]["listen_port"],
         reload=True, debug=True, )

@@ -16,11 +16,11 @@ vm_router = APIRouter()
 
 
 @vm_router.get("/static_info")
-async def vm_static_info(vm_name:str = Query(...)):
+async def vm_static_info(instance_name:str = Query(...)):
     """
-    虚拟机名,uuid,工程,配额等信息
+    虚拟机名,uuid,工程,配额等静态数据
     """
-    vm_data = mem.get(vm_name)
+    vm_data = mem.get(instance_name)
     if vm_data == None:
         raise NoExistException("对应虚拟机信息不存在,检查缓存和采集程序")
     else:
@@ -48,16 +48,15 @@ async def vm_static_info(vm_name:str = Query(...)):
             }
 
 
-@vm_router.get("/statistic_info/{vm_name}")
-async def statistic_info(vm_name):
-    vm_data = mem.get(vm_name)
+@vm_router.get("/statistic_info")
+async def statistic_info(instance_name:str = Query(...)):
+    """
+    虚拟机cpu 内存 io 网络使用量等变化数据 \n
+    :param instance_name: 虚拟机在计算节点中virsh list的名字 \n
+    """
+    vm_data = mem.get(instance_name)
     if vm_data == None:
-        return {
-            "status": -1,
-            "value": None,
-            "timestamp": time(),
-            "msg": "Can not find %s" % vm_name
-        }
+        raise NoExistException("对应虚拟机信息不存在,检查缓存和采集程序")
     else:
         vm_data = loads(vm_data)
         return {

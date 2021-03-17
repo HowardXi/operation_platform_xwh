@@ -22,6 +22,9 @@ async def host_hardware_info(ip=None):
     else:
         raise NoExistException("不知道请求的这玩意在哪, 查查url和缓存吧")
 
+# @hardware_router.post("/hardware")
+# async def insert_host_hardware_info():
+#     pass
 
 if __name__ == '__main__':
     print(asyncio.run(host_hardware_info("172.16.0.13")))

@@ -1,0 +1,14 @@
+class_ = [
+  "bridge",
+  "bus",
+  "communication",
+  "disk",
+  "display",
+  "generic",
+  "memory",
+  "network",
+  "processor",
+  "storage",
+  "system",
+  "volume",
+]
