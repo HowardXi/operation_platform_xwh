@@ -14,7 +14,7 @@ if platform().startswith("Linux"):
     path = Path(log_dir)
     if not path.exists():
         path.mkdir(parents=True)
-    logger.add(log_dir+'operation_service_api.{time}.log', rotation='00:00',
+    logger.add(log_dir+'operation_service_api.log', rotation='00:00',
                retention='15 days', compression="tar.gz")
 
 log = logger

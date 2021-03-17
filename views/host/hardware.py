@@ -18,12 +18,7 @@ hardware_router = APIRouter()
 async def host_hardware_info(ip=None):
     data = loads(mem.get("%s_hardware" % ip) or "{}")
     if data:
-        return {
-            "status": 0,
-            "timestamp": round(time(), 1),
-            "msg": "",
-            "value": data
-        }
+        return data
     else:
         raise NoExistException("不知道请求的这玩意在哪, 查查url和缓存吧")
 

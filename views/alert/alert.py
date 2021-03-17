@@ -24,14 +24,14 @@ async def create_alert_rule():
 @alert_router.post("/reciver")
 async def recv_alert_from_alertmanager(alerts: List = Body(...)):
     # 如果告警信息的fingerprint已经在库中, 不应再次写入, 具体检查fingerprint
-    # 如果状态或者指纹二者之一发生变化 就认为是不同的event 需要重新发送邮件
+
 
 
 
     for alert in alerts:
         fingerprint = alert["fingerprint"]
         old_alert = query_alert_event_by_fingerprint(fingerprint)
-        if old_alert.confirm == False:
+        if old_alert.confirm == False or alert.status != old_alert.status:
             send_mail("","")
 
 

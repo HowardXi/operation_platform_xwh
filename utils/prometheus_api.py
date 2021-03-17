@@ -17,7 +17,7 @@ from settings_parser import cfg
 def request_prometheus(expr, type, method_func=get, **kwargs):
     url = cfg["prometheus"]["prometheus_url"] + "/api/v1/"
     if type == "query":
-        url += "query?query=" + expr
+        url += ("query?query=" + expr)
         param = None
     elif type == "query_range":
         url += "query_range"

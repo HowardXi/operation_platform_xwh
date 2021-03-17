@@ -20,11 +20,9 @@ async def host_base(ip: str = Query(None, max_length=16), job: str = Query(None)
     物理机状态信息和基础信息
     """
     all_host = []
-    print(ip)
     for host in request_prometheus("", "targets")["activeTargets"]:
         if host["labels"]["job"] in PHYSICAL_HOST_JOB:
             host_ip = host["labels"]["instance"].split(":")[0]
-            print(host_ip)
             if ip and not job:
                 if ip == host_ip:
                     all_host.append({
@@ -55,25 +53,21 @@ async def host_base(ip: str = Query(None, max_length=16), job: str = Query(None)
                         "error": host["lastError"],
                         "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
 
-            else:
-                all_host.append({
-                    "host": host_ip,
-                    "health": host["health"],
-                    "job": host["labels"]["job"],
-                    "last_update_time": host["lastScrape"],
-                    "error": host["lastError"],
-                    "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
+            # else:
+            #     all_host.append({
+            #         "host": host_ip,
+            #         "health": host["health"],
+            #         "job": host["labels"]["job"],
+            #         "last_update_time": host["lastScrape"],
+            #         "error": host["lastError"],
+            #         "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
 
-    return {
-        "status": 0,
-        "timestamp": round(time(), 1),
-        "msg": "",
-        "value": all_host
-    }
+    return all_host
+
 
 
 if __name__ == '__main__':
     from json import dumps
     from asyncio import run
 
-    print(dumps(run(host_base("172.16.0.13")), indent=4))
+    print(dumps(request_prometheus("", "targets")["activeTargets"], indent=4))

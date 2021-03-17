@@ -26,10 +26,6 @@ async def vm_static_info(vm_name:str = Query(...)):
     else:
         vm_data = loads(vm_data)
         return {
-            "status": 0,
-            "timestamp": datetime.fromisoformat(vm_data["cap_time"]).timestamp(),
-            "msg": "",
-            "value": {
                 "name": vm_data["name"],
                 "uuid": vm_data["node_id"],
                 "capture time": vm_data["cap_time"],
@@ -50,7 +46,6 @@ async def vm_static_info(vm_name:str = Query(...)):
                     }
                 }
             }
-        }
 
 
 @vm_router.get("/statistic_info/{vm_name}")
@@ -66,10 +61,6 @@ async def statistic_info(vm_name):
     else:
         vm_data = loads(vm_data)
         return {
-            "status": 0,
-            "timestamp": datetime.fromisoformat(vm_data["cap_time"]).timestamp(),
-            "msg": "",
-            "value": {
                 "name": vm_data["name"],
                 "status": vm_data["status"],
                 "status code": vm_data["status_code"],
@@ -96,4 +87,3 @@ async def statistic_info(vm_name):
                 }
 
             }
-        }

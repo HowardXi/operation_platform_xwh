@@ -54,12 +54,7 @@ async def kafka_consumergroup_lag():
             "datetime": i["value"][0]
             # datetime.datetime.fromtimestamp(int(i["value"][0])).isoformat("T")
         })
-    return {
-        "status": 0,
-        "timestamp": round(time(), 1),
-        "msg": "",
-        "value": res
-    }
+    return res
 
 
 @kafka_router.get("/{ip}")
@@ -70,12 +65,7 @@ async def kafka_info(ip):
         if ip == i["labels"]["instance"].split(":")[0]:
             return i
     if res:
-        return {
-            "status": 0,
-            "timestamp": round(time(), 1),
-            "msg": "",
-            "value": res
-        }
+        return res
     else:
         raise NoExistException("找不着这个Kafka的broker, 先看看有没有添加这个主机/服务")
 

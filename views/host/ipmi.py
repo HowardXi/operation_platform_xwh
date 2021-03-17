@@ -17,12 +17,7 @@ ipmi_router = APIRouter()
 async def get_sensor_data(ip:str = Query(...)):
     data = loads(mem.get("%s_ipmi_sensor" % ip) or "{}")
     if data:
-        return {
-            "status": 0,
-            "timestamp": round(time(), 1),
-            "msg": "",
-            "value": data
-        }
+        return data
     else:
         raise NoExistException("Can not find IPMI sensor data about host %s" % ip)
 
