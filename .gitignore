@@ -8,4 +8,4 @@
 /.idea
 /test
 /client/dev/libvirt
-**/__pycache__
+*/__pycache__
