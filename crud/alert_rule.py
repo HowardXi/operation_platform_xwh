@@ -2,19 +2,17 @@
 # -*- coding: utf-8 -*-
 # @Time         : 2021/3/16 11:18
 # @Author       : xwh
-# @File         : alert.py
+# @File         : alert_rule.py
 # @Description  :
 
 from sqlalchemy.orm import Session
 from model.alertrule import AlertRule
-from typing import List
 from utils.database import session_maker
-from settings_parser import PHYSICAL_HOST_JOB
 
 
 def create_alert_rule(
         name, group, expr, for_, costom_label, severity, scope, summary, desc):
-    alert = AlertRule(
+    rule = AlertRule(
         name=name,
         group=group,
         expr=expr,
@@ -26,16 +24,16 @@ def create_alert_rule(
         desc=desc
     )
     with session_maker() as s:
-        s.add(alert)
+        s.add(rule)
         s.commit()
-        s.refresh(alert)
-    return alert
+        s.refresh(rule)
+    return rule
 
 
 def delete_alert_rule(name):
     with session_maker() as session:
-        alert = session.query(AlertRule).filter(AlertRule.name == name).first()
-    return alert
+        rule = session.query(AlertRule).filter(AlertRule.name == name).first()
+    return rule
 
 
 def query_alert_rule(name):
@@ -45,11 +43,10 @@ def query_alert_rule(name):
 
 def query_all_alert_rule():
     with session_maker() as session:
-        return [alert for alert in session.query(AlertRule)]
+        return [rule for rule in session.query(AlertRule)]
 
 
 if __name__ == '__main__':
-    from utils.database import *
 
     create_alert_rule(
         "mem usage",

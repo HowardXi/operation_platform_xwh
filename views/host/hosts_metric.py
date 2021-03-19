@@ -24,10 +24,11 @@ expr_map = {
         "load15": 'sum(node_load15) by (instance) / count(node_cpu_seconds_total{{mode="system"{f}}}) by (instance)',
         "cpu": '100 * (1 - sum by (instance)(increase(node_cpu_seconds_total{{ mode="idle"{f} }}[5m])) / sum by (instance)(increase(node_cpu_seconds_total[5m])))',
         "mem": '(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes{f}',
-        "fs": '(sum(node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device) - sum('
-              'node_filesystem_free_bytes{{device!="rootfs"{f}}}) by (device)) / sum('
-              'node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device)',
-        "read_bytes": 'sum(rate(node_disk_read_bytes_total{f}[5m]))by (instance)'
+        "fs": '(sum(node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (instance) - sum('
+              'node_filesystem_free_bytes{{device!="rootfs"{f}}}) by (instance)) / sum('
+              'node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (instance)',
+        "read_bytes": 'sum(rate(node_disk_read_bytes_total{f}[5m]))by (instance)',
+        "written_bytes": 'sum(rate(node_disk_written_bytes_total{f}[5m]))by (instance)',
 
     },
     "cluster": {
@@ -35,12 +36,11 @@ expr_map = {
         "load15": 'sum(node_load15) by (instance) / count(node_cpu_seconds_total{{mode="system"{f}}}) by (instance)',
         "cpu": '100 * (1 - sum by (instance)(increase(node_cpu_seconds_total{{ mode="idle"{f} }}[5m])) / sum by (instance)(increase(node_cpu_seconds_total[5m])))',
         "mem": '(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes{f}',
-        "fs": '(sum(node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device) - sum('
-              'node_filesystem_free_bytes{{device!="rootfs"{f}}}) by (device)) / sum('
-              'node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (device)',
-        "read_bytes": 'sum(rate(node_disk_read_bytes_total{f}[5m]))by (instance)'
-
-
+        "fs": '(sum(node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (instance) - sum('
+              'node_filesystem_free_bytes{{device!="rootfs"{f}}}) by (instance)) / sum('
+              'node_filesystem_size_bytes{{device!="rootfs"{f}}}) by (instance)',
+        "read_bytes": 'sum(rate(node_disk_read_bytes_total{f}[5m]))by (instance)',
+        "written_bytes": 'sum(rate(node_disk_written_bytes_total{f}[5m]))by (instance)',
     }
 }
 
@@ -53,14 +53,51 @@ def show_support_class_():
     return {k: list(v.keys()) for k, v in expr_map.items()}
 
 
-@host_metric_router.get("/history/cluster/{key}/{value}")
-def get_cluster_history(key, value):
+@host_metric_router.get("/history/cluster")
+def get_cluster_history(job, class_: str = Query(...), start: int = Query(...),
+                        end: int = Query(...), step: int = Query(60, gt=10)):
+    start += int(time())
+    end += int(time())
+
+    if start > end:
+        raise BadParamsException("请求的时间参数貌似不太对劲")
+
+    if class_ not in expr_map["single_node"]:
+        raise NoExistException("不存在这个分类, 支持分类:%s" % str(
+            list(expr_map["single_node"].keys())))
+
+    base_expr = expr_map["single_node"][class_]
+    f = ',job="%s"' % job if "{{" in base_expr else '{job="%s"}' % job
+    expr = base_expr.format(f=f)
+    log.info("format expr: %s" % expr)
+
+    res = query_range(expr, start=start, end=end, step=step)["result"]
+    if res:
+        return res
+    else:
+        raise NoExistException("没有这样式儿的数据, 我没查到啊")
     pass
 
 
-@host_metric_router.get("/latest/cluster/{ip}")
-def get_cluster_latest(ip, class_: str = Query(...)):
-    pass
+@host_metric_router.get("/latest/cluster")
+def get_cluster_latest(job: str = Query(...), class_: str = Query(...)):
+    """
+    根据节点服务或类型来查
+    :param job: 节点类型或服务
+    :param class_: 查询数据分类
+    :return:
+    """
+    base_expr = expr_map["single_node"][class_]
+    f = ',job="%s"' % job if "{{" in base_expr else '{job="%s"}' % job
+    expr = base_expr.format(f=f)
+    log.info("format expr: %s" % expr)
+    res = query(expr)
+
+    if res:
+        return res["result"]
+    else:
+        raise NoExistException("没有这样式儿的数据, 我没查到啊")
+        pass
 
 
 @host_metric_router.get("/history/single/{ip}")

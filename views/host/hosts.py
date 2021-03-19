@@ -53,14 +53,14 @@ async def host_base(ip: str = Query(None, max_length=16), job: str = Query(None)
                         "error": host["lastError"],
                         "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
 
-            # else:
-            #     all_host.append({
-            #         "host": host_ip,
-            #         "health": host["health"],
-            #         "job": host["labels"]["job"],
-            #         "last_update_time": host["lastScrape"],
-            #         "error": host["lastError"],
-            #         "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
+            if not ip and not job:
+                all_host.append({
+                    "host": host_ip,
+                    "health": host["health"],
+                    "job": host["labels"]["job"],
+                    "last_update_time": host["lastScrape"],
+                    "error": host["lastError"],
+                    "last_update_used_time": "%.3f s" % host["lastScrapeDuration"]})
 
     return all_host
 

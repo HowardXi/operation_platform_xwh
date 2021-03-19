@@ -8,7 +8,7 @@
 
 import yaml
 from loguru import logger as log
-from crud.alert import *
+from crud.alert_rule import *
 import json
 from collections import defaultdict
 
@@ -47,7 +47,7 @@ def generate_prometheus_alert_config():
 
 
 if __name__ == '__main__':
-    prometheus_config_path = "./prometheus_alert_rule_example.yml"
+    prometheus_config_path = "../dev/prometheus_alert_rule_example.yml"
 
     # print(json.dumps(generate_prometheus_alert_config(), indent=4))
     with open("../dev/generate_prometheus_alert_config.yml", "w+",encoding="utf-8") as f:

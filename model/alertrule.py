@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time         : 2021/3/12 17:35
 # @Author       : xwh
-# @File         : alert.py
+# @File         : alert_rule.py
 # @Description  :
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Date
 from sqlalchemy.orm import relationship
