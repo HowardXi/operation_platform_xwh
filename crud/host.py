@@ -21,9 +21,9 @@ def create_host(
     return host
 
 
-def delete_host( ip):
+def delete_host(ip, node_type):
     with session_maker() as session:
-        host = session.query(Host).filter(Host.ip == ip).first()
+        host = session.query(Host).filter(Host.ip == ip, Host.node_type == node_type).first()
     return host
 
 
@@ -39,6 +39,7 @@ def query_host(ip):
     with session_maker() as session:
         return session.query(Host).filter(Host.ip == ip).first()
 
+
 def query_all_host(_phy=True):
     with session_maker() as session:
         res = []
@@ -51,8 +52,10 @@ def query_all_host(_phy=True):
 
     return res
 
+
 if __name__ == '__main__':
     from utils.database import *
+
     # print(query_host("172.16.0.13"))
     create_host(
         "172.16.0.16",

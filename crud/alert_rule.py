@@ -17,9 +17,9 @@ def create_alert_rule(
         group=group,
         expr=expr,
         for_=for_,
-        costom_label=costom_label,
+        costom_label=None if not costom_label else costom_label,
         severity=severity,
-        scope=scope,
+        scope=None if not scope else scope,
         summary=summary,
         desc=desc
     )
@@ -47,7 +47,6 @@ def query_all_alert_rule():
 
 
 if __name__ == '__main__':
-
     create_alert_rule(
         "mem usage",
         "common group",
@@ -72,4 +71,3 @@ if __name__ == '__main__':
         '''{{ $labels.instance }} of job {{$labels.job}} cpu使用率超过20%,当前使用率 {{ $value | printf "%.2f" }} %.'''
 
     )
-

@@ -15,7 +15,8 @@ from crud.host import query_all_host
 
 
 def prometheus_generate_config():
-    prometheus_config_path = "../dev/prometheus.yml"
+    # prometheus_config_path = "../dev/prometheus.yml"
+    prometheus_config_path = cfg["prometheus"]["cfg_path"]
 
     with open(prometheus_config_path, "rb") as f:
         pc = yaml.load(f, yaml.FullLoader)
@@ -50,7 +51,8 @@ def prometheus_generate_config():
 
 def prometheus_reload():
     try:
-        r = post(cfg["operation_service_api"]["prometheus_url"] + "/-/reload")
+        prometheus_generate_config()
+        r = post(cfg["prometheus"]["prometheus_url"] + "/-/reload")
         log.info("prometheus reload configure, code=%s, content=%s." % (
             r.status_code, r.content))
         if r.status_code != 200:

@@ -44,8 +44,6 @@ def add_host(
     :param bmc_url: 主机bmc页面地址  \n
     :return: 主机信息的json  \n
     """
-    if query_host(ip):
-        raise HTTPException(status_code=400, detail="不能添加重复的host~")
     return create_host(
         ip=ip, node_type=node_type, exporter_port=exporter_port,interval=interval,
         physical=physical, costom_label=costom_label, desc=desc, ssh_port=ssh_port,
@@ -54,10 +52,11 @@ def add_host(
 @host.delete("/")
 def add_host(
         ip: str = Body(..., regex="^((2[0-4]\d|25[0-5]|[01]?\d\d?)\.){3}(2[0-4]\d|25[0-5]|[01]?\d\d?)$", embed=True),
+        node_type: str = Body(..., min_length=1)
     ):
     if not query_host(ip):
         raise HTTPException(status_code=400, detail="没有这个host~")
-    return delete_host(ip=ip)
+    return delete_host(ip=ip, node_type=node_type).to_dict()
 
 @host.post("/reload")
 def reload_prometheus():

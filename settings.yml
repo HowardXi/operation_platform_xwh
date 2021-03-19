@@ -16,16 +16,15 @@ db:
 
 prometheus:
   prometheus_url: "http://172.18.0.21:9090"
-  prometheus_cfg_path: "/root/xwh/prometheus/prometheus.yml"
+  cfg_path: "/root/xwh/prometheus/prometheus.yml"
 
 operation_service_api:
   listen_port: 11011
   log_dir: "/var/operation_service_x"
-  prometheus_url: "http://172.18.0.21:9090"
 
 
 file_service:
   listen_port: 11001
-  cache_dir: "/var/operation_cache"
+  cache_dir: "/tmp/operation_cache"
 
 
